@@ -24,3 +24,24 @@ it('rejects non image uploads', function () {
 
     expect(Media::query()->count())->toBe(0);
 });
+
+it('lets an administrator delete media and its stored file', function () {
+    Storage::fake('public');
+    $admin = User::factory()->admin()->create();
+    $media = Media::factory()->create();
+    Storage::disk('public')->put($media->path, 'image content');
+
+    $this->actingAs($admin)->delete(route('admin.media.destroy', $media))->assertRedirect()->assertSessionHas('status');
+
+    $this->assertDatabaseMissing('media', ['id' => $media->id]);
+    Storage::disk('public')->assertMissing($media->path);
+});
+
+it('forbids non administrators from deleting media', function () {
+    $media = Media::factory()->create();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->delete(route('admin.media.destroy', $media))->assertForbidden();
+
+    $this->assertDatabaseHas('media', ['id' => $media->id]);
+});

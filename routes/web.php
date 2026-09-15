@@ -29,6 +29,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/contenido/{page}', [AdminPageController::class, 'update'])->name('pages.update');
     Route::get('/multimedia', [AdminMediaController::class, 'index'])->name('media.index');
     Route::post('/multimedia', [AdminMediaController::class, 'store'])->name('media.store');
+    Route::delete('/multimedia/{media}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
     Route::get('/solicitudes', [AdminContactSubmissionController::class, 'index'])->name('contacts.index');
     Route::get('/solicitudes/{contactSubmission}', [AdminContactSubmissionController::class, 'show'])->name('contacts.show');
     Route::patch('/solicitudes/{contactSubmission}', [AdminContactSubmissionController::class, 'update'])->name('contacts.update');

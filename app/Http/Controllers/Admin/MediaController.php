@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreMediaRequest;
 use App\Models\Media;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -37,5 +38,18 @@ class MediaController extends Controller
         ]);
 
         return back()->with('status', 'Imagen cargada correctamente.');
+    }
+
+    public function destroy(Media $media): RedirectResponse
+    {
+        $disk = Storage::disk($media->disk);
+
+        if ($disk->exists($media->path) && ! $disk->delete($media->path)) {
+            return back()->with('error', 'No fue posible eliminar la imagen.');
+        }
+
+        $media->delete();
+
+        return back()->with('status', 'Imagen eliminada correctamente.');
     }
 }
